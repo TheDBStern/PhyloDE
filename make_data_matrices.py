@@ -12,6 +12,9 @@ parser.add_argument('-f', dest= 'Dir', type = str, required=True, help ='Path to
 parser.add_argument('-e', dest= 'Ending', type = str, required=True, help ='Tree file ending')
 args = parser.parse_args()
 
+DIR = args.Dir
+if DIR[-1] != "/": DIR += "/"
+
 state_dict = {}
 exp_dict = {}
 
@@ -20,12 +23,12 @@ with open(args.Spfile, 'rU') as f:
 		state_dict[line.split(',')[0]] = line.split(',')[1]
 		exp_dict[line.split(',')[0]] = line.split(',')[2].strip('\n')
 		
-for file in os.listdir(args.Dir):
+for file in os.listdir(DIR):
     if file.endswith(args.Ending):
         clust = file.split('.')[0]
         print clust
         output = open(clust+'.dat.csv', 'w')
-        output.write(','.join('Gene','State','Expression'))
+        output.write(','.join('Gene','State','ExpMean','ExpVar'))
         tree = Phylo.read(DIR+file, "newick")
         tips = []
         for leaf in tree.get_terminals():
@@ -33,8 +36,8 @@ for file in os.listdir(args.Dir):
         for tip in tips:
             species = tip.split('@')[0]
             trans = tip.split('@')[1]
-            dat = pd.read_csv(exp_dict[species], sep='\t')
-            output.write(','.join(tip,state_dict[species],numpy.mean(dat.loc[trans])))
+            dat = pd.read_csv(exp_dict[species], sep='\t', index_col=0)
+            output.write(','.join(tip,state_dict[species],numpy.mean(dat.loc[trans]),numpy.var(dat.loc.[trans])))
 
 
 '''
