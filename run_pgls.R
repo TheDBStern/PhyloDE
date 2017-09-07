@@ -7,6 +7,7 @@ library(stats)
 outfile <- "PhyloDE_results.csv"
 writeLines('Gene,Coefficient,P-Value', outfile)
 
+
 pgls_loop <- function(treefile){
 	gene <- strsplit(treefile,'\\.')[[1]][1]
 	dat <- read.csv(paste(gene, ".dat.csv", sep=""), header=T, row.names=1)
@@ -21,7 +22,7 @@ pgls_loop <- function(treefile){
 	vf <- varComb(varFixed(~ w), varFixed(~ vars))
 	mod <- gls(ExpMean ~ State, correlation = corMartins(1, phy = phy, fixed=FALSE), data = dat, weights=vf)
 	ans <- anova(mod)
-	df <- data.frame(gene, mod$coefficients[2], ans$'p-value'[2])
+	df <- data.frame(gene, mod$coefficients[[2]], ans$'p-value'[[2]])
 	write.table(df, file=outfile, row.names=FALSE, sep=",", append=TRUE)
 	}
 
@@ -29,4 +30,6 @@ for(i in list.files(pattern='.tre')){
 	pgls_loop(i)
 	}
 
-
+# to do
+# add answers to big data frame and do FDR there and then write out to table
+# outdf <- data.frame()

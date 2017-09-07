@@ -18,7 +18,7 @@ if DIR[-1] != "/": DIR += "/"
 state_dict = {}
 exp_dict = {}
 
-with open(args.Spfile, 'rU') as f:
+with open(args.SpFile, 'rU') as f:
 	for line in f:
 		state_dict[line.split(',')[0]] = line.split(',')[1]
 		exp_dict[line.split(',')[0]] = line.split(',')[2].strip('\n')
@@ -27,8 +27,8 @@ for file in os.listdir(DIR):
     if file.endswith(args.Ending):
         clust = file.split('.')[0]
         print clust
-        output = open(clust+'.dat.csv', 'w')
-        output.write(','.join('Gene','State','ExpMean','ExpVar'))
+        output = open(DIR+clust+'.dat.csv', 'w')
+        output.write(','.join(['Gene','State','ExpMean','ExpVar\n']))
         tree = Phylo.read(DIR+file, "newick")
         tips = []
         for leaf in tree.get_terminals():
@@ -37,7 +37,7 @@ for file in os.listdir(DIR):
             species = tip.split('@')[0]
             trans = tip.split('@')[1]
             dat = pd.read_csv(exp_dict[species], sep='\t', index_col=0)
-            output.write(','.join(tip,state_dict[species],numpy.mean(dat.loc[trans]),numpy.var(dat.loc.[trans])))
+            output.write(','.join([tip,state_dict[species],str(numpy.mean(dat.loc[trans])),str(numpy.var(dat.loc[trans])),'\n']))
 
 
 '''
