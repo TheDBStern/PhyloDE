@@ -37,7 +37,7 @@ for file in os.listdir(DIR):
             species = tip.split('@')[0]
             trans = tip.split('@')[1]
             dat = pd.read_csv(exp_dict[species], sep='\t', index_col=0)
-            output.write(','.join([tip,state_dict[species],str(numpy.mean(dat.loc[trans])),str(numpy.var(dat.loc[trans])),'\n']))
+            output.write(','.join([tip,state_dict[species],str(numpy.mean(dat.loc[trans])),str(numpy.var(dat.loc[trans])+0.000000000001)+'\n']))
 
 
 '''
