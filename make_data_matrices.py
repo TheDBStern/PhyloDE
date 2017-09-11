@@ -21,8 +21,8 @@ exp_dict = {}
 with open(args.SpFile, 'rU') as f:
 	for line in f:
 		state_dict[line.split(',')[0]] = line.split(',')[1]
-		exp_dict[line.split(',')[0]] = line.split(',')[2].strip('\n')
-		
+		exp_dict[line.split(',')[0]] = pd.read_csv(line.split(',')[2].strip('\n'), sep='\t', index_col=0)
+			
 for file in os.listdir(DIR):
     if file.endswith(args.Ending):
         clust = file.split('.')[0]
@@ -30,23 +30,9 @@ for file in os.listdir(DIR):
         output = open(DIR+clust+'.dat.csv', 'w')
         output.write(','.join(['Gene','State','ExpMean','ExpVar\n']))
         tree = Phylo.read(DIR+file, "newick")
-        tips = []
         for leaf in tree.get_terminals():
-            tips.append(leaf.name)
-        for tip in tips:
+            tip = leaf.name
             species = tip.split('@')[0]
             trans = tip.split('@')[1]
-            dat = pd.read_csv(exp_dict[species], sep='\t', index_col=0)
+            dat = exp_dict[species]
             output.write(','.join([tip,state_dict[species],str(numpy.mean(dat.loc[trans])),str(numpy.var(dat.loc[trans])+0.000000000001)+'\n']))
-
-
-'''
-for line in args.SpFile
-	make dict of species and state
-	make another dict of species and path to expression matrix
-	#just open the expression matrix file when needed and close each time using the dict
-
-#select row with pandas
-# df.loc['row_name']
-# numpy.mean(df.loc['row_name'])
-'''
